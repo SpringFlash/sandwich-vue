@@ -55,6 +55,7 @@ h3, h4, h5, h6, p {
     border-bottom-left-radius: 5px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.35);
     color: #444444;
+    width: 250px;
 }
 
 .cart_header {
