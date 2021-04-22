@@ -10,11 +10,11 @@
         <!-- место для Counter.render() -->
         <div class="product_card_count">
           <button v-on:click="minCount">-</button>
-          <input type="text" :value="count">
+          <input type="text" v-model="count">
           <button v-on:click="addCount">+</button>
         </div>
       </div>
-      <button class="btn product_card_btn">В КОРЗИНУ</button> 
+      <button class="btn product_card_btn" @click="buy">В КОРЗИНУ</button> 
   </div>
 </template>
 
@@ -28,7 +28,7 @@ export default {
       name: this.info.name,
       descr: this.info.description,
       price: this.info.price,
-      count: 0
+      count: 1
     }
   },
   computed: {
@@ -45,6 +45,16 @@ export default {
     },
     addCount: function() {
       this.count = Number(this.count) + 1;
+    },
+    buy: function() {
+      this.$emit('buy', this);
+    }
+  },
+  watch: {
+    count: function() {
+      if (!isFinite(this.count) || String(this.count).includes(' ') || this.count == '') 
+        this.count = 1;
+      this.$emit('changeCount', this.count)
     }
   }
 }

@@ -3,12 +3,13 @@
     <h1>СДЕЛАЙТЕ ЗАКАЗ НАПРЯМУЮ ИЗ РЕСТОРАНА</h1>
     <div class="container">
         <div class="interface">
-            <Menu :categories="data.categories"/>
-            <Cart/>
+            <Menu :categories="data.categories" @changeCategory="(key) => {category = key}"/>
+            <Cart :item="toCart" @itemDone = "toCart = {}"/>
         </div>
         <div id="product-list">
-          <ProductCard v-for="card of cards" :key = "card"
-          :info="card" :market="data.markets[card.market]"/>
+          <ProductCard v-for="(card, key) of cardList" :key = "key"
+          :info="card" :market="data.markets[card.market]" 
+          @buy="(prod) => {toCart=prod}"/>
         </div>
     </div>
   </div>
@@ -25,6 +26,8 @@ export default {
   data() {
     return {
       cards: json.menu,
+      toCart: {},
+      category: '',
       data: json
     }
   },
@@ -32,6 +35,17 @@ export default {
     ProductCard,
     Menu,
     Cart
+  },
+  computed: {
+    cardList: function() {
+      let result = {};
+      for (let key in this.cards) {
+        if (this.cards[key].category == this.category) {
+          result[key] = json.menu[key]
+        }
+      }
+      return result;
+    }
   }
 }
 </script>
