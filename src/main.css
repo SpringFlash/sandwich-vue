@@ -245,7 +245,7 @@ menu li.active {
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     overflow-y: scroll;
-    visibility: hidden;
+    /* visibility: hidden; */
 }
 
 .popup {
@@ -324,15 +324,18 @@ menu li.active {
     border-bottom-right-radius: 5px;
 }
 
-.popup_nav_btns {
-    display: flex;
-    justify-content: space-between;
-}
-
 .popup_nav_btns .btn {
     background-color: #e6614c;
     font-size: 14px;
     padding: 9px 20px;
+}
+
+.popup_nav_btns .popup_prev{
+    float: left;
+}
+
+.popup_nav_btns .popup_next {
+    float: right;
 }
 
 .popup_choose {
@@ -403,6 +406,21 @@ menu li.active {
     align-self: center;
 }
 
+
+.popup_finish {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+}
+
+.popup_finish > img {
+    margin: 20px 70px;
+}
+
+.popup_product {
+    margin: 30px 0;
+}
+
 .popup_options {
     border-top: 1px solid #000;
     border-bottom: 1px solid #000;
@@ -416,13 +434,4 @@ menu li.active {
 
 .popup_options p span {
     text-decoration-line: underline;
-}
-
-
-.popup_choose > img {
-    margin: 20px 70px;
-}
-
-.popup_product {
-    margin: 30px 0;
 }

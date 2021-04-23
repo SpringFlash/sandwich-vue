@@ -4,7 +4,7 @@
       <img :src="img" alt="image" class="product-pic">
       <div class="product_card_description">
         <h4>{{name}}</h4>
-        <p>{{descr}}</p>
+        <p @click="custom" :class="{popupable: popupable}">{{descr}}</p>
         <h5 class="product_card_price">Цена: <span>{{price}}</span> руб.</h5>            
         <h6>КОЛИЧЕСТВО</h6>
         <!-- место для Counter.render() -->
@@ -28,6 +28,8 @@ export default {
       name: this.info.name,
       descr: this.info.description,
       price: this.info.price,
+      popupable: this.info.type == "multiple", 
+      components: this.info.components,
       count: 1
     }
   },
@@ -48,6 +50,9 @@ export default {
     },
     buy: function() {
       this.$emit('buy', this);
+    },
+    custom: function() {
+      this.$emit('custom', this)
     }
   },
   watch: {
