@@ -59,9 +59,11 @@ export default {
   components: { Counter },
   props: ['settings', 'list', 'item'],
   data() {
+    let firstStage = 'null';
+    if (this.settings) firstStage = Object.keys(this.settings)[0];
     return {
       // price: 0,
-      stage: Object.keys(this.settings)[0],
+      stage: firstStage,
       show: false,
       components: {},
       quantity: 1

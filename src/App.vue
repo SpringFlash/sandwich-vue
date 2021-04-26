@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <h1>СДЕЛАЙТЕ ЗАКАЗ НАПРЯМУЮ ИЗ РЕСТОРАНА</h1>
+    
     <div class="container">
         <div class="interface">
             <Menu :categories="data.categories" @changeCategory="(key) => {category = key}"/>
@@ -61,7 +62,7 @@ export default {
       return result;
     }
   },
-  created() {
+  beforeCreate() {
     fetch('/data.json')
       .then(response => response.json())
       .then(json => this.data = json);

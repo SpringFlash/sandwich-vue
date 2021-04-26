@@ -165,6 +165,7 @@ menu li.active {
     height: 200px;
     background: #fff;
     object-fit: contain;
+    transition: 0.2s;
 }
 
 .product_card_description {

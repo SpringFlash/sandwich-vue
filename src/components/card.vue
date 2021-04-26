@@ -1,7 +1,7 @@
 <template>
   <div id= "ProductCard" class="product_card">
       <img v-if="mrk" :src="mrk" alt="market" class="market-logo">
-      <img :src="img" alt="image" class="product-pic">
+      <img :src="img" alt="image" class="product-pic" :class="{unloaded: !imgIsLoad}" @load="imgIsLoad=true">
       <div class="product_card_description">
         <h4>{{name}}</h4>
         <p @click="custom" :class="{popupable: popupable}">{{descr}}</p>
@@ -21,6 +21,7 @@ export default {
   data() {
     return {
       img: require('../assets'+this.info.image),
+      imgIsLoad: false,
       name: this.info.name,
       descr: this.info.description,
       price: this.info.price,
@@ -49,3 +50,10 @@ export default {
   }
 }
 </script>
+
+<style>
+.product-pic.unloaded {
+  width: 0;
+  height: 0;
+}
+</style>
