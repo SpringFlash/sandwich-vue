@@ -7,18 +7,14 @@
         <p @click="custom" :class="{popupable: popupable}">{{descr}}</p>
         <h5 class="product_card_price">Цена: <span>{{price}}</span> руб.</h5>            
         <h6>КОЛИЧЕСТВО</h6>
-        <!-- место для Counter.render() -->
-        <div class="product_card_count">
-          <button v-on:click="minCount">-</button>
-          <input type="text" v-model="count">
-          <button v-on:click="addCount">+</button>
-        </div>
+        <Counter v-model="quantity"/>
       </div>
       <button class="btn product_card_btn" @click="buy">В КОРЗИНУ</button> 
   </div>
 </template>
 
 <script>
+import Counter from '@/components/counter.vue'
 export default {
   name: 'ProductCard',
   props: ['info', 'market'],
@@ -30,7 +26,7 @@ export default {
       price: this.info.price,
       popupable: this.info.type == "multiple", 
       components: this.info.components,
-      count: 1
+      quantity: 1
     }
   },
   computed: {
@@ -40,14 +36,6 @@ export default {
     }
   },
   methods: {
-    minCount: function() {
-      if (this.count > 0) {
-        this.count--
-      }
-    },
-    addCount: function() {
-      this.count = Number(this.count) + 1;
-    },
     buy: function() {
       this.$emit('buy', this);
     },
@@ -55,12 +43,9 @@ export default {
       this.$emit('custom', this)
     }
   },
-  watch: {
-    count: function() {
-      if (!isFinite(this.count) || String(this.count).includes(' ') || this.count == '') 
-        this.count = 1;
-      this.$emit('changeCount', this.count)
-    }
+  
+  components: {
+    Counter
   }
 }
 </script>

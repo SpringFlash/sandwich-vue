@@ -21,7 +21,7 @@
           :class="{active: inComp(stage, key)}" @click="toggleComp(stage, key, components[stage].includes(key))">
             <img :src="require('../assets'+card.image)" alt="pop_img" class="product-pic">
             <h3>{{card.name}}</h3>
-            <p>Цена: <span>{{card.price}}</span> руб.</p>
+            <p>Цена: <span v-if="stage=='size'">{{card.price+item.price}}</span><span v-else>{{card.price}}</span> руб.</p>
           </div>
           <div class="popup_finish" v-if="stage=='finish'">
             <img :src="item.img" alt="" class="product-pic">
@@ -39,21 +39,32 @@
         </div>
       </div>
       <div class="popup_footer">
-        <h3>Итого: <span class="popup_price">{{price}}</span> руб.</h3>
+        <h3>Итого: 
+          <span class="popup_price" v-if="stage=='finish'">{{price*quantity}}</span>
+          <span class="popup_price" v-else>{{price}}</span> 
+          руб.
+        </h3>
+        <div v-if="stage=='finish'">
+          <Counter v-model="quantity"/>
+          <button class="btn" @click="buy">В корзину</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Counter from '@/components/counter.vue';
 export default {
+  components: { Counter },
   props: ['settings', 'list', 'item'],
   data() {
     return {
       // price: 0,
       stage: Object.keys(this.settings)[0],
       show: false,
-      components: {}
+      components: {},
+      quantity: 1
     }
   },
   computed: {
@@ -71,7 +82,7 @@ export default {
       return this.stage == Object.keys(this.settings)[0];
     },
     price: function() {
-      let result = 0;
+      let result = this.item.price;
       for (let key_comp in this.components) {
         if (this.components[key_comp] instanceof Array) {
           for (let el of this.components[key_comp]) {
@@ -95,7 +106,10 @@ export default {
     },
     toggleComp: function(st, k, choosen) {
       if (this.components[st] instanceof Array) {
-        if (!choosen) this.components[st].push(k);
+        if (!choosen) {
+          if (st == 'sauce' && this.components[st].length >= 3) return alert('Максимум 3 соуса!');
+          this.components[st].push(k);
+        }
         else this.components[st].splice(this.components[st].indexOf(k), 1);
       } else this.components[st] = k;
     },
@@ -112,6 +126,15 @@ export default {
         }
         return String(result);
       } else return this.list[key][this.components[key]].name;
+    },
+    buy: function() {
+      let copy = Object.assign({}, this.item);
+      copy.name += '(свой)'
+      copy.components = this.components;
+      copy.price = this.price;
+      copy.quantity = this.quantity;
+      this.$emit('buy', copy);
+      this.hide();
     }
   },
   watch: {
@@ -119,15 +142,16 @@ export default {
       if (Object.keys(this.item).length == 0) return
       this.show = true;
       this.stage = Object.keys(this.settings)[0];
+      this.quantity = this.item.quantity;
       this.components = {};
       let components = this.item.components;
       for (const key in components) {
         if (components[key] instanceof Array) {
-            this.$set(this.components, key, Array.from(components[key]));
+          this.$set(this.components, key, Array.from(components[key]));
         } else if (components[key] instanceof Object) {
-            this.$set(this.components, key, Object.assign({}, components[key]));
+          this.$set(this.components, key, Object.assign({}, components[key]));
         } else {
-            this.$set(this.components, key, components[key]);
+          this.$set(this.components, key, components[key]);
         }
       }
     }
