@@ -21,7 +21,7 @@
           :class="{active: inComp(stage, key)}" @click="toggleComp(stage, key, components[stage].includes(key))">
             <img :src="require('../assets'+card.image)" alt="pop_img" class="product-pic">
             <h3>{{card.name}}</h3>
-            <p>Цена: <span v-if="stage=='size'">{{card.price+item.price}}</span><span v-else>{{card.price}}</span> руб.</p>
+            <p>Цена: <span >{{ stage === 'size' ? card.price+item.price : card.price}}</span> руб.</p>
           </div>
           <div class="popup_finish" v-if="stage=='finish'">
             <img :src="item.img" alt="" class="product-pic">
@@ -40,12 +40,11 @@
       </div>
       <div class="popup_footer">
         <h3>Итого: 
-          <span class="popup_price" v-if="stage=='finish'">{{price*quantity}}</span>
-          <span class="popup_price" v-else>{{price}}</span> 
+          <span class="popup_price">{{stage=='finish'?price*$store.getters.getPopQty:price}}</span>
           руб.
         </h3>
         <div v-if="stage=='finish'">
-          <Counter v-model="quantity"/>
+          <Counter :idPar="item.name" type="'custom'"/>
           <button class="btn" @click="buy">В корзину</button>
         </div>
       </div>
@@ -57,24 +56,30 @@
 import Counter from '@/components/counter.vue';
 export default {
   components: { Counter },
-  props: ['settings', 'list', 'item'],
   data() {
     let firstStage = 'null';
     if (this.settings) firstStage = Object.keys(this.settings)[0];
     return {
-      // price: 0,
       stage: firstStage,
-      show: false,
       components: {},
-      quantity: 1
     }
   },
   computed: {
-    cards: function() {
-      return this.list[this.stage];
+    settings() { return this.$store.getters.getData.settings },
+    item() { return this.$store.getters.getPopItem },
+    cards() { return this.list[this.stage] },
+    header() { return this.settings[this.stage].title },
+    list() {
+      let result = {};
+      for (let key in this.settings) {
+        result[key] = this.$store.getters.getData[this.settings[key].object]
+      }
+      return result;
     },
-    header: function() {
-      return this.settings[this.stage].title
+    show() { 
+      let s = this.$store.getters.getPopShow;
+      if (s == true) this.init();
+      return s;
     },
     lastStage: function() {
       let keys = Object.keys(this.settings);
@@ -97,8 +102,21 @@ export default {
   },
   methods: {
     hide: function() {
-      this.show = false;
-      this.$emit('itemDone')
+      this.$store.commit('hidePop');
+    },
+    init() {
+      this.stage = Object.keys(this.settings)[0];
+      this.components = {}; 
+      let components = this.item.components;
+      for (const key in components) {
+        if (components[key] instanceof Array) {
+          this.$set(this.components, key, Array.from(components[key]));
+        } else if (components[key] instanceof Object) {
+          this.$set(this.components, key, Object.assign({}, components[key]));
+        } else {
+          this.$set(this.components, key, components[key]);
+        }
+      }
     },
     nextStage: function() {
       this.stage = Object.keys(this.settings)[Object.keys(this.settings).indexOf(this.stage)+1];
@@ -130,32 +148,12 @@ export default {
       } else return this.list[key][this.components[key]].name;
     },
     buy: function() {
-      let copy = Object.assign({}, this.item);
-      copy.name += '(свой)'
-      copy.components = this.components;
-      copy.price = this.price;
-      copy.quantity = this.quantity;
-      this.$emit('buy', copy);
+      this.$store.commit('addToCart', {
+        ...this.item,
+        name: this.item.name + ' (custom) [' + this.price + 'р.]', 
+        quantity: this.$store.getters.getPopQty
+      });
       this.hide();
-    }
-  },
-  watch: {
-    item: function() {
-      if (Object.keys(this.item).length == 0) return
-      this.show = true;
-      this.stage = Object.keys(this.settings)[0];
-      this.quantity = this.item.quantity;
-      this.components = {};
-      let components = this.item.components;
-      for (const key in components) {
-        if (components[key] instanceof Array) {
-          this.$set(this.components, key, Array.from(components[key]));
-        } else if (components[key] instanceof Object) {
-          this.$set(this.components, key, Object.assign({}, components[key]));
-        } else {
-          this.$set(this.components, key, components[key]);
-        }
-      }
     }
   }
 }

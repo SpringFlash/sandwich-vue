@@ -7,7 +7,7 @@
         <p @click="custom" :class="{popupable: popupable}">{{descr}}</p>
         <h5 class="product_card_price">Цена: <span>{{price}}</span> руб.</h5>            
         <h6>КОЛИЧЕСТВО</h6>
-        <Counter v-model="quantity"/>
+        <Counter :idPar="name" :type="'original'"/>
       </div>
       <button class="btn product_card_btn" @click="buy">В КОРЗИНУ</button> 
   </div>
@@ -26,25 +26,36 @@ export default {
       descr: this.info.description,
       price: this.info.price,
       popupable: this.info.type == "multiple", 
-      components: this.info.components,
-      quantity: 1
+      components: this.info.components
     }
   },
   computed: {
-    mrk: function() {
+    mrk() {
       if (this.market) return require('../assets'+this.market.image);
       else return false;
     }
   },
   methods: {
     buy: function() {
-      this.$emit('buy', this);
+      let toBuy = {
+        name: this.name,
+        price: this.price,
+        components: this.components,
+        type: 'original'
+      };
+      this.$store.commit('addToCart', toBuy);
     },
     custom: function() {
-      this.$emit('custom', this)
+      let toCust = {
+        name: this.name,
+        img: this.img,
+        price: this.price,
+        components: this.components,
+        quantity: this.$store.getters.getQty(this.name)
+      };
+      this.$store.commit('initPop', toCust)
     }
   },
-  
   components: {
     Counter
   }

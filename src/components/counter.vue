@@ -1,7 +1,7 @@
 <template>
   <div class="product_card_count">
     <button v-on:click="minCount">-</button>
-    <input type="text" :value="quantity" @input="changeQty($event)">
+    <input type="text" :value="quantity" @input="changeQty($event.target.value)">
     <button v-on:click="addCount">+</button>
   </div>
 </template>
@@ -9,31 +9,28 @@
 <script>
 export default {
   name: 'Counter',
-  props: ['quantity'],
-  /* data() {
-    return {
-      quantity: this.start
+  props: ['idPar', 'type'],
+  computed: {
+    quantity() { 
+      return this.type == 'original' ? this.$store.getters.getQty(this.idPar) : this.$store.getters.getPopQty;
     }
-  }, */
-  model: {
-    prop: 'quantity',
-    event: 'changeQty'
   },
   methods: {
-    minCount: function() {
+    minCount() {
       if (this.quantity > 1) {
-        this.$emit('changeQty', this.quantity - 1)
+        this.changeQty(this.quantity - 1)
       }
     },
-    addCount: function() {
-      this.$emit('changeQty', Number(this.quantity) + 1);
+    addCount() {
+      this.changeQty(Number(this.quantity) + 1);
     },
-    changeQty: function(e) {
-      if (this.checkValue(e.target.value)) this.$emit('changeQty', 1);
-      this.$emit('changeQty', Number(e.target.value))
+    changeQty(val) {
+      let result;
+      if (this.checkValue(val)) result = 1
+      else result = val;
+      this.type == 'original' ? this.$store.commit('changeQty', {id:this.idPar, quantity: result}) : this.$store.commit('changePopQty', result)
     },
-    checkValue: function(val) {
-      console.log(val)
+    checkValue(val) {
       return (
         !Number.isInteger(Number(val)) ||
         String(val).includes(' ') ||

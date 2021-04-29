@@ -1,32 +1,20 @@
 <template>
   <menu>
-    <li v-for="(cat, key) in categories" :key="key" v-on:click="changeActive(key)"
-    v-bind:category="key" :class="{active: checkActive(key)}">{{cat.name}}</li>
+    <li v-for="(cat, key) in categories" :key="key" v-on:click="changeCategory(key)"
+    v-bind:category="key" :class="{active: key == $store.getters.getCategory}">{{cat.name}}</li>
   </menu>
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
   name: 'Menu',
-  props: ['categories'],
-  data() {
-    return {
-      active: undefined
-    }
+  computed: {
+    active() {return this.$store.getters.getCategory},
+    categories() {return this.$store.state.json.categories}
   },
   methods: {
-    checkActive(key) {
-      if (this.active == key) {
-        return true;
-      } else if (!this.active) {
-        this.changeActive(key);
-        return true;
-      } else return false;
-    },
-    changeActive(key) {
-      this.active = key;
-      this.$emit('changeCategory', key);
-    }
+    ...mapMutations(['changeCategory'])
   }
 }
 </script>
