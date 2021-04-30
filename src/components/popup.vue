@@ -151,7 +151,8 @@ export default {
       this.$store.commit('addToCart', {
         ...this.item,
         name: this.item.name + ' (custom) [' + this.price + 'р.]', 
-        quantity: this.$store.getters.getPopQty
+        quantity: this.$store.getters.getPopQty,
+        price: this.price
       });
       this.hide();
     }
