@@ -57,7 +57,7 @@ export default {
   async mounted() {
     this.$store.dispatch("getJson").then(() => {
       this.hasData = true;
-      if (this.$route.path === "/")
+      if (!Object.keys(this.data.categories).includes(this.$route.params.category))
         this.$router.push(`/${Object.keys(this.data.categories)[0]}`);
     });
   },
