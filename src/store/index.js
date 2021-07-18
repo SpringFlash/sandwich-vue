@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import Menu from './modules/Menu';
 import Cart from './modules/Cart';
 import Cards from './modules/Cards';
 import Popup from './modules/Popup';
@@ -11,7 +10,6 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   modules: {
     Cart,
-    Menu,
     Cards,
     Popup
   },
@@ -21,7 +19,6 @@ export default new Vuex.Store({
   mutations: {
     updateData(state, json) {
       state.json = json;
-      state.Menu.category = Object.keys(state.json.categories)[0];
       for (let card of json.menu)
         state.Cards.cards[card.name] = {...card, quantity: 1};
     }
@@ -36,6 +33,9 @@ export default new Vuex.Store({
   getters: {
     getData(state) { 
       return state.json 
+    },
+    getCategories(state) {
+      return state.json.categories;
     }
   }
 });
